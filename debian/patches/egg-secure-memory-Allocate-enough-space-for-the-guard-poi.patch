@@ -1,0 +1,34 @@
+From: Simon McVittie <smcv@debian.org>
+Date: Sun, 26 Sep 2021 16:04:19 +0100
+Subject: egg-secure-memory: Allocate enough space for the guard pointers
+
+Cell allocations have an overhead of two pointer-sized words, which we
+need to take into account. Otherwise, whenever we try to allocate a new
+block to hold at least `DEFAULT_BLOCK_SIZE - 2 * sizeof (void *)` bytes,
+it will end up too small to allocate a cell of that size and we will
+fall back to non-mlock'd memory with a warning.
+
+Fixes: 982aadd9 "Completely overhaul the secure memory allocator"
+Bug: https://gitlab.gnome.org/GNOME/gnome-keyring/-/issues/36
+Signed-off-by: Simon McVittie <smcv@debian.org>
+Forwarded: https://gitlab.gnome.org/GNOME/gnome-keyring/-/merge_requests/43
+---
+ egg/egg-secure-memory.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/egg/egg-secure-memory.c b/egg/egg-secure-memory.c
+index ed6fbcc..7391854 100644
+--- a/egg/egg-secure-memory.c
++++ b/egg/egg-secure-memory.c
+@@ -959,6 +959,11 @@ sec_block_create (size_t size,
+ 		return NULL;
+ 	}
+ 
++	/* Whatever size we were asked for, we'll need a little more space:
++	 * each allocation has an overhead of 2 words, for the guard
++	 * pointers before and after. */
++	size += (2 * sizeof (word_t));
++
+ 	/* The size above is a minimum, we're free to go bigger */
+ 	if (size < DEFAULT_BLOCK_SIZE)
+ 		size = DEFAULT_BLOCK_SIZE;

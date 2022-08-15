@@ -1,0 +1,11 @@
+usr/bin
+usr/share/locale
+usr/share/dbus-1/services
+usr/share/glib-2.0/schemas
+usr/share/GConf/gsettings
+usr/share/man/man1/gnome-keyring.1
+usr/share/man/man1/gnome-keyring-daemon.1
+usr/share/man/man1/gnome-keyring-3.1
+usr/share/xdg-desktop-portal
+usr/lib/*/gnome-keyring/devel/*.so
+etc/xdg/autostart

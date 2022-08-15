@@ -1,0 +1,2 @@
+usr/lib/*/pkcs11/*.so
+usr/share/p11-kit
